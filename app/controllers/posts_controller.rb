@@ -1,5 +1,7 @@
 class PostsController < ApplicationController
   before_action :set_post, only: %i[ show edit update destroy ]
+  skip_before_action :verify_authenticity_token
+
 
   # GET /posts or /posts.json
   def index
@@ -22,38 +24,38 @@ class PostsController < ApplicationController
   # POST /posts or /posts.json
   def create
     @post = Post.new(post_params)
-
-    respond_to do |format|
+    
       if @post.save
-        format.html { redirect_to @post, notice: "Post was successfully created." }
-        format.json { render :show, status: :created, location: @post }
+        render json: @post, status: :created, location: @note
       else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+        render json: @post.errors, status: :unprocessable_entity
       end
-    end
+
   end
 
   # PATCH/PUT /posts/1 or /posts/1.json
   def update
-    respond_to do |format|
-      if @post.update(post_params)
-        format.html { redirect_to @post, notice: "Post was successfully updated." }
-        format.json { render :show, status: :ok, location: @post }
+    user_id = decoded_token[0]['user_id']
+    puts user_id
+    puts @post.user_id
+      if user_id == @post.user_id && @post.update(post_params)
+       render json: @post, status: :ok, location: @post
       else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @post.errors, status: :unprocessable_entity }
+        render json: @post.errors, status: :unprocessable_entity
       end
-    end
+
   end
 
   # DELETE /posts/1 or /posts/1.json
   def destroy
-    @post.destroy
-    respond_to do |format|
-      format.html { redirect_to posts_url, notice: "Post was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    user_id = decoded_token[0]['user_id']
+    
+    if user_id == @post.user_id
+      @post.destroy
+      render json: @post, status: :ok, location: @post
+     else
+       render json: @post.errors, status: :unprocessable_entity
+     end
   end
 
   private
@@ -64,6 +66,6 @@ class PostsController < ApplicationController
 
     # Only allow a list of trusted parameters through.
     def post_params
-      params.require(:post).permit(:title, :body, :tags, :user, :user_id)
+      params.require(:post).permit(:title, :body, :tags, :user_id)
     end
 end

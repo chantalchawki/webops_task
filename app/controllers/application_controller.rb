@@ -4,9 +4,9 @@ class ApplicationController < ActionController::Base
         JWT.encode(payload, "secret")
     end
 
-    def decode_token
-        if request.header["Authorization"]
-            token = request.header["Authorization"].split(" ")[1]
+    def decoded_token
+        if request.headers["Authorization"]
+            token = request.headers["Authorization"].split(" ")[1]
             begin
                 JWT.decode(token, "secret", true, algorithm: 'HS256')
             rescue
@@ -17,8 +17,8 @@ class ApplicationController < ActionController::Base
     end
 
     def logged_in_user
-        if decode_token
-            user_id = decode_token[0]['user_id']
+        if decoded_token
+            user_id = decoded_token[0]['user_id']
             @user = User.find_by(id: user_id)
         end
     end
