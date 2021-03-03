@@ -25,7 +25,7 @@ class PostsController < ApplicationController
   def create
     @post = Post.new(post_params)
     
-      if @post.save
+      if decoded_token != nil && @post.save
         render json: @post, status: :created, location: @post
       else
         render json: @post.errors, status: :unprocessable_entity
@@ -36,8 +36,6 @@ class PostsController < ApplicationController
   # PATCH/PUT /posts/1 or /posts/1.json
   def update
     user_id = decoded_token[0]['user_id']
-    puts user_id
-    puts @post.user_id
       if user_id == @post.user_id && @post.update(post_params)
        render json: @post, status: :ok, location: @post
       else
