@@ -26,7 +26,7 @@ class PostsController < ApplicationController
     @post = Post.new(post_params)
     
       if @post.save
-        render json: @post, status: :created, location: @note
+        render json: @post, status: :created, location: @post
       else
         render json: @post.errors, status: :unprocessable_entity
       end
@@ -49,7 +49,7 @@ class PostsController < ApplicationController
   # DELETE /posts/1 or /posts/1.json
   def destroy
     user_id = decoded_token[0]['user_id']
-    
+
     if user_id == @post.user_id
       @post.destroy
       render json: @post, status: :ok, location: @post
