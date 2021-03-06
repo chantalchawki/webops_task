@@ -28,6 +28,7 @@ class PostsController < ApplicationController
     user_id = decoded_token[0]['user_id'] 
     @post.user_id = user_id
     if @post.save
+      PostWorker.perform_at(24.hours.from_now, @post.id)
       render json: @post, status: :created, location: @post
     else
       render json: @post.errors, status: :unprocessable_entity
