@@ -1,0 +1,44 @@
+version: "3"
+services:
+  server:
+    container_name: server
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    networks:
+      - server_network
+    depends_on:
+      - mysql
+      - redis
+
+  mysql:
+    container_name: db
+    image: mysql:8.0.23
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_ROOT_HOST=%
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=blog_development
+    ports:
+      - "1234:3306"
+    volumes:
+      - mysql:/var/lib/mysql
+    networks:
+      - server_network
+
+  redis:
+    container_name: redis
+    image: redis:6.2.1
+    volumes:
+      - redis:/data
+    networks:
+      - server_network
+
+volumes:
+  mysql:
+  redis:
+
+networks:
+  server_network:
+    driver: bridge

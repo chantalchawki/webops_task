@@ -15,7 +15,7 @@ default: &default
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   username: root
   password: root
-  host: localhost
+  host: mysql
   socket: /tmp/mysql.sock
 
 development:
@@ -51,6 +51,6 @@ test:
 #
 production:
   <<: *default
-  database: rails_test_3_production
-  username: rails_test_3
-  password: <%= ENV['RAILS_TEST_3_DATABASE_PASSWORD'] %>
+  database: webops_task_production
+  username: webops_task
+  password: <%= ENV['WEBOPS_TASK_DATABASE_PASSWORD'] %>
